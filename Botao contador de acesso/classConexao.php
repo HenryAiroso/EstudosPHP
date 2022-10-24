@@ -1,6 +1,6 @@
 <?php
 
-class classConexao{
+class ClassConexao{
     
     public function Conexao(){
         try{

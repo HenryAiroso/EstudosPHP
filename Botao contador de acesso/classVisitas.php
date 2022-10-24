@@ -1,15 +1,24 @@
 <?php
 
-include ("classConexao.php");
+include ("ClassConexao.php");
 
 
-class classVisitas extends classConexao{
+class ClassVisitas extends ClassConexao{
 
     private $ID, $IP,$Datas ,$Hora, $Limite ;
 
     public function __construct(){
         $this->ID=0;
-        $this->IP=$_SERVER['REMOTE_ADDR'];
+        if(!empty($_SERVER['HTTP_CLIENT_IP'])){
+            $ip=$_SERVER['HTTP_CLIENT_IP'];
+          }
+          elseif(!empty($_SERVER['HTTP_X_FORWARDED_FOR'])){
+            $ip=$_SERVER['HTTP_X_FORWARDED_FOR'];
+          }
+          else{
+            $ip=$_SERVER['REMOTE_ADDR'];
+          }
+        $this->IP=$ip;
         $this->Datas=date("Y/m/d");
         $this->Hora=date("H:i");
         $this->Limite=-2;
@@ -39,13 +48,12 @@ class classVisitas extends classConexao{
 
     private function InsertVisitors()
     {
-        $Select=$this->Conexao()->prepare("INSERT into visitas VALUES (:ID ,:IP ,:Datas,:Hora)");
+        $Select=$this->Conexao()->prepare("INSERT into visitas VALUES (:ID ,:IP,:Datas,:Hora)");
         
         $Select->bindParam(":ID",$this->ID,PDO::PARAM_STR);
         $Select->bindParam(":IP",$this->IP,PDO::PARAM_STR);
         $Select->bindParam(":Datas",$this->Datas,PDO::PARAM_STR);   
         $Select->bindParam(":Hora",$this->Hora,PDO::PARAM_STR);   
-
         $Select->execute();
     }
 
